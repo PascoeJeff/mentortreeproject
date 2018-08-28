@@ -3,16 +3,10 @@ package com.solstice.controller;
 import com.solstice.dao.EmployeeRepository;
 import com.solstice.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 
 @RestController
@@ -26,12 +20,15 @@ public class EmployeeRestController {
         return employeeRepository.findById(id).get();
     }
 
-    @GetMapping(value = "/employees/list/" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Employee> getEmployeesByIdList(@Param("ids") String[] ids) {
-        List<Long> idList = Arrays.stream(ids)
-                .map(Long::valueOf)
-                .collect(toList());
-
-        return employeeRepository.findEmployeesByIdList(idList);
+    @GetMapping(value = "/employees/list/{ids}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Employee> getEmployeesByIdList(@PathVariable("ids") List<Long> ids) {
+        return employeeRepository.findEmployeesByIdList(ids);
     }
+
+    @PutMapping("/employees/{id}")
+    Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+        
+        return ;
+    }
+
 }

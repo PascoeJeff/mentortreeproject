@@ -1,7 +1,6 @@
 package com.solstice.service;
 
 import com.solstice.dao.MentorTreeRepository;
-import com.solstice.entity.Employee;
 import com.solstice.entity.MentorTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -31,25 +30,37 @@ public class MentorTreeService {
         return ids;
     }
 
-    public Employee getEmployeeFromEmployeeService(String uri, Long id) {
-        return this.restTemplate.getForObject(uri, Employee.class, id);
+    public List<Long> getEmployeeIdsFromTreeLeadId(Long id) {
+
+        List<MentorTree> mentorTrees = mentorTreeRepository.findAllByTreeLeadId(id);
+        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
+        List<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(toList());
+        ids.addAll(mentorIds);
+        return ids;
+
     }
 
-    public List<Employee> getEmployeeFromEmployeeService(String uri, List<Long> ids) {
+    public Object getEmployeeFromEmployeeService(String uri, Long id) {
+        return this.restTemplate.getForObject(uri, Object.class, id);
+    }
 
-        String queryString = "?ids=";
-        for(Long l : ids) {
-            queryString.concat(String.valueOf(l));
+    public List<Object> getEmployeesFromEmployeeService(String uri, List<Long> ids) {
+        StringBuilder sb = new StringBuilder();
+        for (Long i: ids) {
+            sb.append(i);
+            sb.append(",");
         }
+        sb.deleteCharAt(sb.lastIndexOf(","));
 
-        return (List<Employee>)this.restTemplate.getForObject(uri+queryString, List.class);
-
+        return this.restTemplate.getForObject(uri, List.class, sb);
     }
+
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
 }
 
 

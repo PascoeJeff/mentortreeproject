@@ -1,6 +1,6 @@
 package com.solstice;
 
-import com.google.gson.Gson;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,9 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class EmployeeControllerTest {
-
-    @Autowired
-    Gson gson;
 
     @Autowired
     MockMvc mvc;
@@ -37,5 +35,12 @@ public class EmployeeControllerTest {
         mvc.perform(get("/employees/list/").param("ids", new String[] {"3","4"}))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("jeff"))).andExpect(content().string(containsString("sher")));
+    }
+
+    @Test
+    public void updateEmployee_returnsUpdateSucess() throws Exception {
+       mvc.perform(put("/employees/{id}", 1).content("{firstname:\"Mike\", lastname: \"lexus\"}"))
+               .andExpect(status().isOk())
+               .andExpect(content().string(containsString("Update successful")));
     }
 }

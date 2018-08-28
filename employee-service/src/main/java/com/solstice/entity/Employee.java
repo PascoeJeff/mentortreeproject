@@ -22,7 +22,6 @@ public class Employee {
     public Employee() {
     }
 
-
     public Employee(String firstName, String lastName, Long employeeNumber, String office, String title, String email, String imageUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
