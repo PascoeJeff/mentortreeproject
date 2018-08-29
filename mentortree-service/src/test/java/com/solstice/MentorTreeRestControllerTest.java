@@ -1,5 +1,6 @@
 package com.solstice;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,35 +26,37 @@ public class MentorTreeRestControllerTest {
 
     @Autowired
     MockMvc mvc;
+    @Before
+
 
     @Test
     public void getEmployeeById_returnEmployee() throws Exception {
-        mvc.perform(get("/employees/{id}", 1))
+        mvc.perform(get("/employees/{id}", 3))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{ id: 1, firstName: \"\",lastName: \"\", employeeNumber: 1, office: \"\", title: \"\", email: \"\", imageUrl: \"\"}"));
+                .andExpect(content().json("{ id: 3, firstName: \"Jeff\",lastName: \"\", employeeNumber: 3, office: \"\", title: \"\", email: \"\", imageUrl: \"\"}"));
     }
 
     @Test
     public void getEmployeesByMentorId_returnEmployees() throws Exception{
-        mvc.perform(get("/mentors/{id}/employees", 11))
+        mvc.perform(get("/mentors/{id}/employees", 1))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("jeff")))
-                .andExpect(content().string(containsString("sher")));
+                .andExpect(content().string(containsString("Jeff")))
+                .andExpect(content().string(containsString("Sher")));
     }
 
     @Test
     public void getEmployeesByTreeLeadId_returnsEmployees() throws Exception{
-        mvc.perform(get("/treeleads/{id}/employees" ,1))
+        mvc.perform(get("/treeleads/{id}/employees" ,2))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("jeff")))
-                .andExpect(content().string(containsString("sher")));
+                .andExpect(content().string(containsString("Jeff")))
+                .andExpect(content().string(containsString("Sher")));
     }
     @Test
     public void updateEmployeeMentorId_returnsSuccessMessage() throws Exception{
-        long id = 6;
+        long id = 5;
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.patch("/employees/{id}/mentors/", id)
-                        .content("{\"mentorId\":12}")
+                        .content("{\"mentorId\":1}")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON);
         this.mvc.perform(builder)
@@ -63,7 +66,7 @@ public class MentorTreeRestControllerTest {
 
     @Test
     public void updateEmployeeTreeLeadId_returnsSuccessMessage() throws Exception{
-        long id = 7;
+        long id = 5;
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.patch("/employees/{id}/treeleads/", id)
                         .content("{\"treeLeadId\":1}")
@@ -76,9 +79,9 @@ public class MentorTreeRestControllerTest {
 
     @Test
     public void deleteEmployeeById_returns200() throws Exception {
-        long id = 1;
-        mvc.perform(delete("/employees/{id}" ,12))
+        mvc.perform(delete("/employees/{id}" ,6))
                 .andExpect(status().isOk());
     }
+
 }
 

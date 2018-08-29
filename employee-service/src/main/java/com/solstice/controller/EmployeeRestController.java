@@ -19,6 +19,7 @@ public class EmployeeRestController {
     public Employee getEmployeesById(@PathVariable("id") Long id) {
         return employeeRepository.findById(id).get();
     }
+
     @GetMapping(value = "/employees/list/{ids}" , produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Employee> getEmployeesByIdList(@PathVariable("ids") List<Long> ids) {
         return employeeRepository.findEmployeesByIdList(ids);

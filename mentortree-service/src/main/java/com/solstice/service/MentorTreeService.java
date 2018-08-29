@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,10 +32,12 @@ public class MentorTreeService {
 
     public List<Long> getEmployeeIdsFromTreeLeadId(Long id) {
         List<MentorTree> mentorTrees = mentorTreeRepository.findAllByTreeLeadId(id);
-        Set<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(Collectors.toSet());
-        Set<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(Collectors.toSet());
+        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
+        List<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(toList());
         ids.addAll(mentorIds);
-        return (List)ids;
+
+        //to do remove duplicates
+        return ids;
     }
 
     public Object getEmployeeFromEmployeeService(String uri, Long id) {

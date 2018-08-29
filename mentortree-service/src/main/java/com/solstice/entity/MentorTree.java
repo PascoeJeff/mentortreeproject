@@ -2,10 +2,7 @@ package com.solstice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class MentorTree {
@@ -14,8 +11,11 @@ public class MentorTree {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long id;
+    @Column
     private Long employeeId;
+    @Column
     private Long mentorId;
+    @Column
     private Long treeLeadId;
 
     public MentorTree() {
