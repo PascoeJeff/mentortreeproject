@@ -27,7 +27,7 @@ public class EmployeeControllerTest {
     public void getWithEmployeeId_returnsEmployee() throws Exception {
         mvc.perform(get("/employees/{id}", 1))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{ id: 1, firstName: \"\",lastName: \"\", employeeNumber: 1, office: \"\", title: \"\", email: \"\", imageUrl: \"\"}"));
+                .andExpect(content().json("{id: 1, firstName: \"\",lastName: \"\", employeeNumber: 1, office: \"\", title: \"\", email: \"\", imageUrl: \"\"}"));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class EmployeeControllerTest {
 
     @Test
     public void updateEmployee_returnsUpdateSucess() throws Exception {
-       mvc.perform(put("/employees/{id}", 1).content("{firstname:\"Mike\", lastname: \"lexus\"}"))
+       mvc.perform(put("/employees/{id}", 2).content("{\"id\": 2, \"firstName\": \"Mercedes\",\"lastName\": \"Benz\", \"employeeNumber\": 2, \"office\": \"Chicago\", \"title\": \"Super Fast\", \"email\": \"\", \"imageUrl\": \"\"}").contentType("application/json;charset=UTF-8"))
                .andExpect(status().isOk())
-               .andExpect(content().string(containsString("Update successful")));
+               .andExpect(content().string(containsString("Mercedes")));
     }
 }

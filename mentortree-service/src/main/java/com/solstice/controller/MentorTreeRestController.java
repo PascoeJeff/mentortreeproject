@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -23,7 +24,7 @@ public class MentorTreeRestController {
 
     @GetMapping(value = "/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object getEmployeeById(@PathVariable Long id) {
-        return mentorTreeService.getEmployeeFromEmployeeService("http://localhost:8080/employees/{id}/",id);
+        return mentorTreeService.getEmployeeFromEmployeeService("http://localhost:8080/employees/{id}/", id);
     }
 
     @GetMapping(value = "/mentors/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,8 +33,8 @@ public class MentorTreeRestController {
         List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
         List<Employee> employeeList = new ArrayList<>();
 
-        for(Object o : menteeList) {
-            employeeList.add(new Employee((LinkedHashMap<String, Object>)o));
+        for (Object o : menteeList) {
+            employeeList.add(new Employee((LinkedHashMap<String, Object>) o));
         }
 
         Resources<Employee> resources = addLinkToEmployee(employeeList);
@@ -41,14 +42,14 @@ public class MentorTreeRestController {
         return resources;
     }
 
-    @GetMapping(value= "/treeleads/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/treeleads/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByTreeLeadId(@PathVariable Long id) {
         List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromTreeLeadId(id);
         List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
         List<Employee> employeeList = new ArrayList<>();
 
-        for(Object o : menteeList) {
-            employeeList.add(new Employee((LinkedHashMap<String, Object>)o));
+        for (Object o : menteeList) {
+            employeeList.add(new Employee((LinkedHashMap<String, Object>) o));
         }
 
         Resources<Employee> resources = addLinkToEmployee(employeeList);
@@ -56,11 +57,29 @@ public class MentorTreeRestController {
         return resources;
     }
 
-    @PutMapping("/employees/{id}")
-    public Employee updateEmployeeById(@PathVariable Long id, @RequestBody Employee employee) {
+    @PatchMapping(value = "/employees/{id}/mentors/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String updateEmployeeMentorId(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+        boolean updateSuccess = mentorTreeService.updateMentorIdForEmployee(id, body.get("mentorId"));
+        if (updateSuccess == true) {
+            return "Set new mentor for employee with id: " + id;
+        } else {
+            return "Unsuccessful";
+        }
+    }
 
+    @PatchMapping(value = "/employees/{id}/treeleads/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String updateEmployeeTreeLeadId(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+        boolean updateSuccess = mentorTreeService.updateTreeLeadIdForEmployee(id, body.get("treeLeadId"));
+        if (updateSuccess == true) {
+            return "Set new tree lead for employee with id: " + id;
+        } else {
+            return "Unsuccessful";
+        }
+    }
 
-        return null;
+    @DeleteMapping("/employees/{id}")
+    public void deleteEmployeeById(@PathVariable Long id) {
+        mentorTreeService.deleteEmployee(id);
     }
 
     private Resources<Employee> addLinkToEmployee(List<Employee> employeeList) {

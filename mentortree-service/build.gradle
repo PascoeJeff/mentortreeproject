@@ -23,6 +23,11 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    manifest {
+        attributes 'mainClassName': 'com.solstice.MentortreeServiceApplication'
+    }
+}
 
 ext {
     springCloudVersion = 'Finchley.SR1'

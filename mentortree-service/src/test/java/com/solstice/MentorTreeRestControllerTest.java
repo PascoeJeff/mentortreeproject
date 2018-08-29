@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,21 +49,36 @@ public class MentorTreeRestControllerTest {
                 .andExpect(content().string(containsString("sher")));
     }
     @Test
-    public void updateEmpoyeeById_returnsOk() throws Exception{
-        long id = 2;
+    public void updateEmployeeMentorId_returnsSuccessMessage() throws Exception{
+        long id = 6;
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.put("/employees/{id}", id)
+                MockMvcRequestBuilders.patch("/employees/{id}/mentors/", id)
+                        .content("{\"mentorId\":12}")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(updateMike());
+                        .accept(MediaType.APPLICATION_JSON);
         this.mvc.perform(builder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().string(containsString("Set new mentor for employee with id: " + id)));
     }
 
-    private String updateMike() {
-        return "{ firstname : \"Mike\" , lastname :\"Lexus\"}";
+    @Test
+    public void updateEmployeeTreeLeadId_returnsSuccessMessage() throws Exception{
+        long id = 7;
+        MockHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.patch("/employees/{id}/treeleads/", id)
+                        .content("{\"treeLeadId\":1}")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON);
+        this.mvc.perform(builder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().string(containsString("Set new tree lead for employee with id: " + id)));
     }
 
-
+    @Test
+    public void deleteEmployeeById_returns200() throws Exception {
+        long id = 1;
+        mvc.perform(delete("/employees/{id}" ,12))
+                .andExpect(status().isOk());
+    }
 }
 

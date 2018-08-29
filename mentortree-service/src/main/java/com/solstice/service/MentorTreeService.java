@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,13 +33,11 @@ public class MentorTreeService {
     }
 
     public List<Long> getEmployeeIdsFromTreeLeadId(Long id) {
-
         List<MentorTree> mentorTrees = mentorTreeRepository.findAllByTreeLeadId(id);
-        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
-        List<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(toList());
+        Set<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(Collectors.toSet());
+        Set<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(Collectors.toSet());
         ids.addAll(mentorIds);
-        return ids;
-
+        return (List)ids;
     }
 
     public Object getEmployeeFromEmployeeService(String uri, Long id) {
@@ -46,20 +46,64 @@ public class MentorTreeService {
 
     public List<Object> getEmployeesFromEmployeeService(String uri, List<Long> ids) {
         StringBuilder sb = new StringBuilder();
-        for (Long i: ids) {
+        for (Long i : ids) {
             sb.append(i);
             sb.append(",");
         }
         sb.deleteCharAt(sb.lastIndexOf(","));
-
         return this.restTemplate.getForObject(uri, List.class, sb);
     }
 
+    public boolean updateMentorIdForEmployee(Long id, Long mentorId) {
+        MentorTree mentorTree = mentorTreeRepository.findByEmployeeId(id);
+        mentorTree.setMentorId(mentorId);
+        if (mentorTreeRepository.save(mentorTree) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateTreeLeadIdForEmployee(Long id, Long treeLeadId) {
+        MentorTree mentorTree = mentorTreeRepository.findByEmployeeId(id);
+        mentorTree.setTreeLeadId(treeLeadId);
+        if (mentorTreeRepository.save(mentorTree) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public void deleteEmployee(Long id) {
+        List<MentorTree> mentorTreesWithIdAsEmployee = mentorTreeRepository.findAllByEmployeeId(id)
+                .parallelStream()
+                .map(mentorTree -> {
+                    mentorTree.setEmployeeId(null);
+                    return mentorTree;
+                }).collect(toList());
+
+        List<MentorTree> mentorTreesWithIdAsMentor = mentorTreeRepository.findAllByMentorId(id)
+                .parallelStream()
+                .map(mentorTree -> {
+                    mentorTree.setMentorId(null);
+                    return mentorTree;
+                }).collect(toList());
+
+        List<MentorTree> mentorTreesWithIdAsTreeLead = mentorTreeRepository.findAllByTreeLeadId(id)
+                .parallelStream()
+                .map(mentorTree -> {
+                    mentorTree.setTreeLeadId(null);
+                    return mentorTree;
+                }).collect(toList());
+
+        mentorTreeRepository.saveAll(mentorTreesWithIdAsEmployee);
+        mentorTreeRepository.saveAll(mentorTreesWithIdAsMentor);
+        mentorTreeRepository.saveAll(mentorTreesWithIdAsTreeLead);
+    }
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
 
 }
 
