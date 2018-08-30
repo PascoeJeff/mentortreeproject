@@ -1,22 +1,37 @@
 package com.solstice.service;
 
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.EurekaClient;
+import com.solstice.controller.MentorTreeRestController;
 import com.solstice.dao.MentorTreeRepository;
+import com.solstice.entity.Employee;
 import com.solstice.entity.MentorTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resources;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+@RefreshScope
 @Service
 public class MentorTreeService {
 
     @Autowired
     MentorTreeRepository mentorTreeRepository;
+
+    @Autowired
+    private EurekaClient discoveryClient;
 
     private RestTemplate restTemplate;
 
@@ -99,10 +114,36 @@ public class MentorTreeService {
         mentorTreeRepository.saveAll(mentorTreesWithIdAsTreeLead);
     }
 
+    public Resources<Employee> addLinkToEmployee(List<Employee> employeeList) {
+        Resources<Employee> resources = new Resources<Employee>(employeeList);
+        for (final Employee resource : resources) {
+            Link selfLink = linkTo(methodOn(MentorTreeRestController.class)
+                    .getEmployeeById(resource.getId())).withSelfRel();
+            resource.setLink(selfLink);
+        }
+        return resources;
+    }
+
+    public List<Employee> getEmployeesFromHashMap(List<Object> menteeList) {
+        List<Employee> employeeList = new ArrayList<>();
+
+        for (Object o : menteeList) {
+            employeeList.add(new Employee((LinkedHashMap<String, Object>) o));
+        }
+        return employeeList;
+    }
+
+
+    public String serviceUrl() {
+        InstanceInfo instance = discoveryClient.getNextServerFromEureka("zuul-server", false);
+        return instance.getHomePageUrl();
+    }
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
 
 
 }

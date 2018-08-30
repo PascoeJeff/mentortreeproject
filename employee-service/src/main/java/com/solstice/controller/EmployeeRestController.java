@@ -15,17 +15,17 @@ public class EmployeeRestController {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    @GetMapping(value = "/employees/{id}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "employee-service/employees/{id}" , produces = MediaType.APPLICATION_JSON_VALUE)
     public Employee getEmployeesById(@PathVariable("id") Long id) {
         return employeeRepository.findById(id).get();
     }
 
-    @GetMapping(value = "/employees/list/{ids}" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Employee> getEmployeesByIdList(@PathVariable("ids") List<Long> ids) {
+    @GetMapping(value = "employee-service/employees/list/{ids}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Employee> getEmployeesByIdList(@PathVariable("ids") List<String> ids) {
         return employeeRepository.findEmployeesByIdList(ids);
     }
 
-    @PutMapping("/employees/{id}")
+    @PutMapping("employee-service/employees/{id}")
     public Employee updateEmployee(@RequestBody Employee employee, @PathVariable Long id) {
         if(employee.toString().contains("null")) return null; // To do return some type of error response and error message
         Employee updatedEmployee = employeeRepository.findById(id).get();
