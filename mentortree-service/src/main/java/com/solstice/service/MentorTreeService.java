@@ -1,11 +1,17 @@
 package com.solstice.service;
 
 import com.solstice.dao.MentorTreeRepository;
+import com.solstice.entity.Employee;
 import com.solstice.entity.MentorTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -40,19 +46,27 @@ public class MentorTreeService {
         return ids;
     }
 
-    public Object getEmployeeFromEmployeeService(String uri, Long id) {
-        return this.restTemplate.getForObject(uri, Object.class, id);
+    public Employee getEmployeeFromEmployeeService(String uri, Long id) {
+        return this.restTemplate.getForObject(uri, Employee.class, id);
     }
 
-    public List<Object> getEmployeesFromEmployeeService(String uri, List<Long> ids) {
-        StringBuilder sb = new StringBuilder();
-        for (Long i : ids) {
-            sb.append(i);
-            sb.append(",");
-        }
-        sb.deleteCharAt(sb.lastIndexOf(","));
-        return this.restTemplate.getForObject(uri, List.class, sb);
+    public List<Employee> getEmployeesFromEmployeeService(String uri, Long id) {
+
+        List<Long> employeeIdList = getEmployeeIdsFromMentorId(id);
+
+        HttpEntity<List<Long>> httpEntity = new HttpEntity<List<Long>>(employeeIdList);
+
+        ResponseEntity<List<Employee>> rateResponse =
+                restTemplate.exchange(uri,
+                        HttpMethod.POST,
+                        httpEntity,
+                        new ParameterizedTypeReference<List<Employee>>() {
+                        });
+        List<Employee> employees = rateResponse.getBody();
+
+        return employees;
     }
+
 
     public boolean updateMentorIdForEmployee(Long id, Long mentorId) {
         MentorTree mentorTree = mentorTreeRepository.findByEmployeeId(id);
@@ -98,6 +112,7 @@ public class MentorTreeService {
         mentorTreeRepository.saveAll(mentorTreesWithIdAsMentor);
         mentorTreeRepository.saveAll(mentorTreesWithIdAsTreeLead);
     }
+
 
     @Bean
     public RestTemplate restTemplate() {

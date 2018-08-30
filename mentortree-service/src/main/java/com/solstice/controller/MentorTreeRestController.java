@@ -23,29 +23,21 @@ public class MentorTreeRestController {
     MentorTreeService mentorTreeService;
 
     @GetMapping(value = "/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getEmployeeById(@PathVariable Long id) {
+    public Employee getEmployeeById(@PathVariable Long id) {
         return mentorTreeService.getEmployeeFromEmployeeService("http://localhost:8080/employees/{id}/", id);
     }
 
     @GetMapping(value = "/mentors/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Resources<Employee> getEmployeesByMentorId(@PathVariable Long id) {
-        List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromMentorId(id);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
-        List<Employee> employeeList = new ArrayList<>();
+    public List<Employee> getEmployeesByMentorId(@PathVariable Long id) {
+        List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/", id);
 
-        for (Object o : menteeList) {
-            employeeList.add(new Employee((LinkedHashMap<String, Object>) o));
-        }
-
-        Resources<Employee> resources = addLinkToEmployee(employeeList);
-
-        return resources;
+        return menteeList;
     }
 
     @GetMapping(value = "/treeleads/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByTreeLeadId(@PathVariable Long id) {
         List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromTreeLeadId(id);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
+        List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", id);
         List<Employee> employeeList = new ArrayList<>();
 
         for (Object o : menteeList) {

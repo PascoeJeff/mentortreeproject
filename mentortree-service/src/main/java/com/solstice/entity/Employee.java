@@ -12,13 +12,13 @@ public class Employee {
     private Long id;
     private String firstName;
     private String lastName;
-    @JsonIgnore
+    //@JsonIgnore
     private Long employeeNumber;
-    @JsonIgnore
+    //@JsonIgnore
     private String office;
-    @JsonIgnore
+    //@JsonIgnore
     private String title;
-    @JsonIgnore
+    //@JsonIgnore
     private String email;
     private String imageUrl;
     private Link link;

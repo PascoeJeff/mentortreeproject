@@ -1,9 +1,12 @@
 package com.solstice.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Employee {
@@ -39,7 +42,7 @@ public class Employee {
     public String getFirstName() {
         return firstName;
     }
-
+    @JsonProperty(required = true)
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -47,7 +50,7 @@ public class Employee {
     public String getLastName() {
         return lastName;
     }
-
+    @JsonProperty(required = true)
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -55,7 +58,7 @@ public class Employee {
     public Long getEmployeeNumber() {
         return employeeNumber;
     }
-
+    @JsonProperty(required = true)
     public void setEmployeeNumber(Long employeeNumber) {
         this.employeeNumber = employeeNumber;
     }
@@ -63,7 +66,7 @@ public class Employee {
     public String getOffice() {
         return office;
     }
-
+    @JsonProperty(required = true)
     public void setOffice(String office) {
         this.office = office;
     }
@@ -71,7 +74,7 @@ public class Employee {
     public String getTitle() {
         return title;
     }
-
+    @JsonProperty(required = true)
     public void setTitle(String title) {
         this.title = title;
     }
@@ -79,7 +82,7 @@ public class Employee {
     public String getEmail() {
         return email;
     }
-
+    @JsonProperty(required = true)
     public void setEmail(String email) {
         this.email = email;
     }
@@ -87,8 +90,10 @@ public class Employee {
     public String getImageUrl() {
         return imageUrl;
     }
-
+    @JsonProperty(required = true)
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+
 }
