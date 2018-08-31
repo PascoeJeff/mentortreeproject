@@ -1,4 +1,4 @@
-package com.solstice.entity;
+package com.solstice.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.hateoas.Link;
@@ -22,7 +22,6 @@ public class Employee {
     private String email;
     private String imageUrl;
     private Link link;
-
 
     public Employee() {
     }
@@ -115,4 +114,6 @@ public class Employee {
         this.link = link;
     }
 
+
 }
+

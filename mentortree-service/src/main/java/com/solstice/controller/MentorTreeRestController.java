@@ -1,6 +1,7 @@
 package com.solstice.controller;
 
-import com.solstice.entity.Employee;
+import com.solstice.domain.Employee;
+import com.solstice.domain.EmployeeInfo;
 import com.solstice.service.MentorTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
@@ -15,33 +16,28 @@ public class MentorTreeRestController {
 
     @Autowired
     MentorTreeService mentorTreeService;
+
     @GetMapping(value = "/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getEmployeeById(@PathVariable Long id) {
+    public EmployeeInfo getEmployeeById(@PathVariable Long id) {
         return mentorTreeService.getEmployeeFromEmployeeService(mentorTreeService.serviceUrl()+"employees/{id}/", id);
     }
 
     @GetMapping(value = "/mentors/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByMentorId(@PathVariable Long id) {
-        List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromMentorId(id);
-//        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employees/list/{ids}", employeeIdList);
-
-        List<Employee> employeeList = mentorTreeService.getEmployeesFromHashMap(menteeList);
-
-        Resources<Employee> resources = mentorTreeService.addLinkToEmployee(employeeList);
+        List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService(
+                mentorTreeService.serviceUrl()+"employees/list/",
+                    mentorTreeService.getEmployeeIdsFromMentorId(id));
+        Resources<Employee> resources = mentorTreeService.addLinkToEmployee(menteeList);
 
         return resources;
     }
 
-
     @GetMapping(value = "/treeleads/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByTreeLeadId(@PathVariable Long id) {
-        List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromTreeLeadId(id);
-//        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employees/list/{ids}", employeeIdList);
-        List<Employee> employeeList = mentorTreeService.getEmployeesFromHashMap(menteeList);
-
-        Resources<Employee> resources = mentorTreeService.addLinkToEmployee(employeeList);
+        List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService(
+                mentorTreeService.serviceUrl()+"employees/list/",
+                    mentorTreeService.getEmployeeIdsFromTreeLeadId(id));
+        Resources<Employee> resources = mentorTreeService.addLinkToEmployee(menteeList);
 
         return resources;
     }
@@ -49,32 +45,19 @@ public class MentorTreeRestController {
     @PatchMapping(value = "/employees/{id}/mentors/", produces = MediaType.APPLICATION_JSON_VALUE)
     public String updateEmployeeMentorId(@PathVariable Long id, @RequestBody Map<String, Long> body) {
         boolean updateSuccess = mentorTreeService.updateMentorIdForEmployee(id, body.get("mentorId"));
-        if (updateSuccess == true) {
-            return "Set new mentor for employee with id: " + id;
-        } else {
-            return "Unsuccessful";
-        }
+        return mentorTreeService.getSuccessMessage(updateSuccess, "Set new mentor for employee with id: " + id);
     }
 
     @PatchMapping(value = "/employees/{id}/treeleads/", produces = MediaType.APPLICATION_JSON_VALUE)
     public String updateEmployeeTreeLeadId(@PathVariable Long id, @RequestBody Map<String, Long> body) {
         boolean updateSuccess = mentorTreeService.updateTreeLeadIdForEmployee(id, body.get("treeLeadId"));
-        if (updateSuccess == true) {
-            return "Set new tree lead for employee with id: " + id;
-        } else {
-            return "Unsuccessful";
-        }
+        return mentorTreeService.getSuccessMessage(updateSuccess, "Set new tree lead for employee with id: " + id);
     }
 
     @DeleteMapping("/employees/{id}")
     public void deleteEmployeeById(@PathVariable Long id) {
         mentorTreeService.deleteEmployee(id);
     }
-
-
-
-
-
 }
 
 

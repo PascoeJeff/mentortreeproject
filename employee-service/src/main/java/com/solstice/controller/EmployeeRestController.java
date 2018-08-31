@@ -20,9 +20,9 @@ public class EmployeeRestController {
         return employeeRepository.findById(id).get();
     }
 
-    @GetMapping(value = "/employees/list/{ids}" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Employee> getEmployeesByIdList(@PathVariable("ids") List<Long> ids) {
-        return employeeRepository.findEmployeesByIdList(ids);
+    @GetMapping(value = "/employees/list" , produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Employee> getEmployeesByIdListTest(@RequestParam ("ids") List<Long> ids) {
+        return employeeRepository.findEmployeeByIdIn(ids);
     }
 
     @PutMapping("/employees/{id}")
@@ -38,7 +38,4 @@ public class EmployeeRestController {
         updatedEmployee.setImageUrl(employee.getImageUrl());
         return employeeRepository.save(updatedEmployee);
     }
-
-
-
 }

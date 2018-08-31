@@ -24,14 +24,20 @@ repositories {
 }
 
 
+bootJar {
+    manifest {
+        attributes 'mainClassName': 'com.solstice.ZuulApplication'
+    }
+}
 ext {
     springCloudVersion = 'Finchley.SR1'
 }
 
+
 dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
-    compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
-    compile('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '2.0.1.RELEASE'
+    compile group: 'io.pivotal.spring.cloud', name: 'spring-cloud-services-starter-service-registry', version: '2.0.1.RELEASE'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

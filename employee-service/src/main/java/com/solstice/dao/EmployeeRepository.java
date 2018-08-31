@@ -16,4 +16,6 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
     @Query("SELECT e FROM Employee e WHERE id IN :ids")
     List<Employee> findEmployeesByIdList(@Param("ids") List<Long> ids);
 
+    List<Employee> findEmployeeByIdIn(List<Long> ids);
+
 }

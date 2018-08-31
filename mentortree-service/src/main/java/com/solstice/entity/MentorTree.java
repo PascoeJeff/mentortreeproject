@@ -11,11 +11,8 @@ public class MentorTree {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long id;
-    @Column
     private Long employeeId;
-    @Column
     private Long mentorId;
-    @Column
     private Long treeLeadId;
 
     public MentorTree() {
