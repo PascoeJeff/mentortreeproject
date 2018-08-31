@@ -135,7 +135,7 @@ public class MentorTreeService {
 
 
     public String serviceUrl() {
-        InstanceInfo instance = discoveryClient.getNextServerFromEureka("zuul-server", false);
+        InstanceInfo instance = discoveryClient.getNextServerFromEureka("employee-service", false);
         return instance.getHomePageUrl();
     }
 

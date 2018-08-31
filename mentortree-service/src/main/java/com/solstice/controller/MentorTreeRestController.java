@@ -15,17 +15,16 @@ public class MentorTreeRestController {
 
     @Autowired
     MentorTreeService mentorTreeService;
-    // changed to mentor/employees from eployees/
     @GetMapping(value = "/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object getEmployeeById(@PathVariable Long id) {
-        return mentorTreeService.getEmployeeFromEmployeeService(mentorTreeService.serviceUrl()+"employee-service/employees/{id}/", id);
+        return mentorTreeService.getEmployeeFromEmployeeService(mentorTreeService.serviceUrl()+"employees/{id}/", id);
     }
 
     @GetMapping(value = "/mentors/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByMentorId(@PathVariable Long id) {
         List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromMentorId(id);
 //        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employee-service/employees/list/{ids}", employeeIdList);
+        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employees/list/{ids}", employeeIdList);
 
         List<Employee> employeeList = mentorTreeService.getEmployeesFromHashMap(menteeList);
 
@@ -39,7 +38,7 @@ public class MentorTreeRestController {
     public Resources<Employee> getEmployeesByTreeLeadId(@PathVariable Long id) {
         List<Long> employeeIdList = mentorTreeService.getEmployeeIdsFromTreeLeadId(id);
 //        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService("http://localhost:8080/employees/list/{ids}", employeeIdList);
-        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employee-service/employees/list/{ids}", employeeIdList);
+        List<Object> menteeList = mentorTreeService.getEmployeesFromEmployeeService(mentorTreeService.serviceUrl()+"employees/list/{ids}", employeeIdList);
         List<Employee> employeeList = mentorTreeService.getEmployeesFromHashMap(menteeList);
 
         Resources<Employee> resources = mentorTreeService.addLinkToEmployee(employeeList);

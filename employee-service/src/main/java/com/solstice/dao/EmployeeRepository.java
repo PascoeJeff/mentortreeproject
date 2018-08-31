@@ -14,6 +14,6 @@ import java.util.List;
 public interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
     @Query("SELECT e FROM Employee e WHERE id IN :ids")
-    List<Employee> findEmployeesByIdList(@Param("ids") List<String> ids);
+    List<Employee> findEmployeesByIdList(@Param("ids") List<Long> ids);
 
 }
