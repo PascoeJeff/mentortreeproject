@@ -16,7 +16,6 @@ public class EmployeeInfo {
     private String email;
     private String imageUrl;
 
-
     public EmployeeInfo() {
     }
 
@@ -38,10 +37,10 @@ public class EmployeeInfo {
         this.imageUrl = imageUrl;
     }
 
-
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) { this.id = id;}
 
     public String getFirstName() {
@@ -99,5 +98,4 @@ public class EmployeeInfo {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-
 }

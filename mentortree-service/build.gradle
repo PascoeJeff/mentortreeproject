@@ -35,7 +35,7 @@ ext {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-data-rest')
+
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-hateoas')
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'

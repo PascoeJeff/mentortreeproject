@@ -44,10 +44,10 @@ public class Employee {
         this.imageUrl = imageUrl;
     }
 
-
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) { this.id = id;}
 
     public String getFirstName() {
@@ -113,7 +113,5 @@ public class Employee {
     public void setLink(Link link) {
         this.link = link;
     }
-
-
 }
 

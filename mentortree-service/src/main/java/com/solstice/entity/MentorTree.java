@@ -24,7 +24,6 @@ public class MentorTree {
         this.treeLeadId = treeLeadId;
     }
 
-
     public Long getId() {
         return id;
     }

@@ -29,18 +29,39 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Service
 public class MentorTreeService {
 
-    @Autowired
-    MentorTreeRepository mentorTreeRepository;
 
     @Autowired
     private EurekaClient discoveryClient;
+    MentorTreeRepository mentorTreeRepository;
+    RestTemplate restTemplate;
 
-    private RestTemplate restTemplate;
-
-    public MentorTreeService(RestTemplateBuilder restTemplateBuilder) {
+    public MentorTreeService(RestTemplateBuilder restTemplateBuilder, MentorTreeRepository mentorTreeRepository) {
         this.restTemplate = restTemplateBuilder.build();
+        this.mentorTreeRepository = mentorTreeRepository;
     }
 
+    //Retrieves a list of the employee ids belonging to the mentees of a given mentor.
+    public List<Long> getEmployeeIdsFromMentorId(Long id) {
+        List<MentorTree> mentorTrees = mentorTreeRepository.findAllByMentorId(id);
+        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
+        return ids;
+    }
+
+    //Retrieves a list of the employee ids belonging to the any employee that exists in the given tree leads tree.
+    public List<Long> getEmployeeIdsFromTreeLeadId(Long id) {
+        List<MentorTree> mentorTrees = mentorTreeRepository.findAllByTreeLeadId(id);
+        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
+        List<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(toList());
+        ids.addAll(mentorIds);
+        return ids;
+    }
+
+    //Calls out to the employee-service and retrieves a single employee based on the given employee id.
+    public EmployeeInfo getEmployeeFromEmployeeService(String uri, Long id) {
+        return this.restTemplate.getForObject(uri, EmployeeInfo.class, id);
+    }
+
+    //Calls out to the employee-service and retrieves a list of Employees, one for each id in the provided id list.
     public List<Employee> getEmployeesFromEmployeeService(String uri, List<Long> ids) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -58,24 +79,7 @@ public class MentorTreeService {
         return rateResponse.getBody();
     }
 
-    public List<Long> getEmployeeIdsFromMentorId(Long id) {
-        List<MentorTree> mentorTrees = mentorTreeRepository.findAllByMentorId(id);
-        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
-        return ids;
-    }
-
-    public List<Long> getEmployeeIdsFromTreeLeadId(Long id) {
-        List<MentorTree> mentorTrees = mentorTreeRepository.findAllByTreeLeadId(id);
-        List<Long> ids = mentorTrees.stream().map(MentorTree::getEmployeeId).collect(toList());
-        List<Long> mentorIds = mentorTrees.stream().map(MentorTree::getMentorId).collect(toList());
-        ids.addAll(mentorIds);
-        return ids;
-    }
-
-    public EmployeeInfo getEmployeeFromEmployeeService(String uri, Long id) {
-        return this.restTemplate.getForObject(uri, EmployeeInfo.class, id);
-    }
-
+    //This is used to update the mentor for an employee.
     public boolean updateMentorIdForEmployee(Long id, Long mentorId) {
         MentorTree mentorTree = mentorTreeRepository.findByEmployeeId(id);
         mentorTree.setMentorId(mentorId);
@@ -85,6 +89,7 @@ public class MentorTreeService {
         return false;
     }
 
+    //This is used to update the tree lead for an employee.
     public boolean updateTreeLeadIdForEmployee(Long id, Long treeLeadId) {
         MentorTree mentorTree = mentorTreeRepository.findByEmployeeId(id);
         mentorTree.setTreeLeadId(treeLeadId);
@@ -94,6 +99,7 @@ public class MentorTreeService {
         return false;
     }
 
+    //This is used to remove a given employee from any mentorTree structures that it is found in.
     public void deleteEmployee(Long id) {
         List<MentorTree> mentorTreesWithIdAsEmployee = mentorTreeRepository.findAllByEmployeeId(id)
                 .parallelStream()
@@ -121,6 +127,7 @@ public class MentorTreeService {
         mentorTreeRepository.saveAll(mentorTreesWithIdAsTreeLead);
     }
 
+    //Used to add a link to an employee that can be used to access the resource.
     public Resources<Employee> addLinkToEmployee(List<Employee> employeeList) {
         Resources<Employee> resources = new Resources<>(employeeList);
         for (final Employee resource : resources) {
@@ -131,6 +138,7 @@ public class MentorTreeService {
         return resources;
     }
 
+    //A simpler helper function.
     public String getSuccessMessage(boolean updateSuccess, String s) {
         if (updateSuccess == true) {
             return s;
@@ -139,11 +147,13 @@ public class MentorTreeService {
         }
     }
 
-    public String serviceUrl() {
-        InstanceInfo instance = discoveryClient.getNextServerFromEureka("employee-service", false);
+    //Used to get the a service url for the provided service
+    public String serviceUrl(String serviceName) {
+        InstanceInfo instance = discoveryClient.getNextServerFromEureka(serviceName, false);
         return instance.getHomePageUrl();
     }
 
+    //Used to take a list of Long and format it as a comma delimitted string.
     public String formatUriParameters(List<Long> ids) {
         StringBuilder sb = new StringBuilder();
         for (Long i : ids) {

@@ -19,13 +19,15 @@ public class MentorTreeRestController {
 
     @GetMapping(value = "/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeInfo getEmployeeById(@PathVariable Long id) {
-        return mentorTreeService.getEmployeeFromEmployeeService(mentorTreeService.serviceUrl()+"employees/{id}/", id);
+        String url = mentorTreeService.serviceUrl("zuul-server")+"employee-service/employees/" + id;
+        System.err.println(url);
+        return mentorTreeService.getEmployeeFromEmployeeService(mentorTreeService.serviceUrl("zuul-server")+"employee-service/employees/{id}", id);
     }
 
     @GetMapping(value = "/mentors/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByMentorId(@PathVariable Long id) {
         List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService(
-                mentorTreeService.serviceUrl()+"employees/list/",
+                mentorTreeService.serviceUrl("zuul-server")+"employee-service/employees/list/",
                     mentorTreeService.getEmployeeIdsFromMentorId(id));
         Resources<Employee> resources = mentorTreeService.addLinkToEmployee(menteeList);
 
@@ -35,7 +37,7 @@ public class MentorTreeRestController {
     @GetMapping(value = "/treeleads/{id}/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     public Resources<Employee> getEmployeesByTreeLeadId(@PathVariable Long id) {
         List<Employee> menteeList = mentorTreeService.getEmployeesFromEmployeeService(
-                mentorTreeService.serviceUrl()+"employees/list/",
+                mentorTreeService.serviceUrl("zuul-server")+"employee-service/employees/list/",
                     mentorTreeService.getEmployeeIdsFromTreeLeadId(id));
         Resources<Employee> resources = mentorTreeService.addLinkToEmployee(menteeList);
 

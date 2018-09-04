@@ -1,46 +1,91 @@
 package com.solstice;
 
-
+import com.solstice.controller.EmployeeRestController;
+import com.solstice.entity.Employee;
+import com.solstice.service.EmployeeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
 public class EmployeeControllerTest {
 
-    @Autowired
-    MockMvc mvc;
+    @Mock
+    private EmployeeService employeeService;
 
-   @Test
-    public void getWithEmployeeId_returnsEmployee() throws Exception {
-        mvc.perform(get("/employees/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{id: 1, firstName: \"Joe\",lastName: \"\", employeeNumber: 1, office: \"\", title: \"\", email: \"\", imageUrl: \"\"}"));
+    private EmployeeRestController employeeRestController = new EmployeeRestController();
+
+    @Test
+    public void getWithEmployeeId_returnEmployee() throws Exception {
+        Employee employee = new Employee();
+        employee.setFirstName("Joe");
+        employee.setLastName("");
+        employee.setEmail("");
+        employee.setEmployeeNumber(1L);
+        employee.setTitle("");
+        employee.setOffice("");
+        employee.setImageUrl("");
+
+        when(employeeService.retrieveEmployeeById(Mockito.anyLong())).thenReturn(employee);
+        ReflectionTestUtils.setField(employeeRestController, "employeeService", employeeService);
+        Employee actual = employeeRestController.getEmployeesById(7L);
+        assertEquals(employee, actual);
+    }
+
+
+    @Test
+    public void getWithEmployeeIds_returnsEmployeesList() throws Exception {
+        Employee employee = new Employee();
+        employee.setFirstName("Jordan");
+        employee.setLastName("");
+        employee.setEmail("");
+        employee.setEmployeeNumber(1L);
+        employee.setTitle("");
+        employee.setOffice("");
+        employee.setImageUrl("");
+        Employee employee2 = new Employee();
+        employee.setFirstName("Lebron");
+        employee.setLastName("");
+        employee.setEmail("");
+        employee.setEmployeeNumber(2L);
+        employee.setTitle("");
+        employee.setOffice("");
+        employee.setImageUrl("");
+        List<Employee> employeeList = new ArrayList<Employee>();
+        employeeList.add(employee);
+        employeeList.add(employee2);
+        List<Long> ids = new ArrayList<>();
+        ids.add(2L);
+        ids.add(3L);
+        when(employeeService.retrieveEmployeesByIdList(any(List.class))).thenReturn(employeeList);
+        ReflectionTestUtils.setField(employeeRestController, "employeeService", employeeService);
+        List<Employee> actualEmployees = employeeRestController.getEmployeesByIdList(ids);
+        assertEquals(employeeList, actualEmployees);
     }
 
     @Test
-    public void getWithEmployeeIds_returnsEmployees() throws Exception {
-        mvc.perform(get("/employees/list/3,4"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Jeff"))).andExpect(content().string(containsString("Sher")));
-    }
-
-    @Test
-    public void updateEmployee_returnsUpdateSucess() throws Exception {
-       mvc.perform(put("/employees/{id}", 5).content("{\"id\": 5, \"firstName\": \"John\",\"lastName\": \"Benz\", \"employeeNumber\": 5, \"office\": \"Chicago\", \"title\": \"Super Fast\", \"email\": \"\", \"imageUrl\": \"\"}").contentType("application/json;charset=UTF-8"))
-               .andExpect(status().isOk())
-               .andExpect(content().string(containsString("Benz")));
+    public void updateEmployee_returnsUpdateSuccess() throws Exception {
+        Employee employee = new Employee();
+        employee.setFirstName("Joe");
+        employee.setLastName("");
+        employee.setEmail("");
+        employee.setEmployeeNumber(1L);
+        employee.setTitle("");
+        employee.setOffice("");
+        employee.setImageUrl("");
+        when(employeeService.updateEmployee(employee,1L)).thenReturn(employee);
+        ReflectionTestUtils.setField(employeeRestController, "employeeService", employeeService);
+        Employee actual = employeeRestController.updateEmployee(employee,1L);
+        assertEquals(employee, actual);
     }
 }
